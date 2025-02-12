@@ -21,34 +21,40 @@ jobs:
       with:
         node-version: '18'
 
-    - name: List directory contents
+    - name: List root directory contents
       run: ls -la
 
     - name: List frontend directory contents
-      run: ls -la frontend
+      run: ls -la frontend || echo "frontend directory does not exist"
 
     - name: Install dependencies
       run: npm install
       working-directory: frontend
+      if: success()
 
     - name: Run Tests
       run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
       working-directory: frontend
+      if: success()
 
     - name: Generate Coverage Report
       run: npm run coverage
       working-directory: frontend
+      if: success()
 
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: frontend/coverage/
+      if: success()
 
     - name: Build Docker Image
       run: docker build -t bobapp/frontend:latest frontend
+      if: success()
 
     - name: Push Docker Image to Docker Hub
       run: |
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
         docker push bobapp/frontend:latest
+      if: success()
