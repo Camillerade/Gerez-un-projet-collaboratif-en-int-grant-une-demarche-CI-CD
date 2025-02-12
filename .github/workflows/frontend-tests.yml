@@ -1,37 +1,36 @@
 name: Frontend Tests
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: List files in front directory
-        run: dir front
-        shell: cmd
+    - name: List files in root directory
+      run: ls -la
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+    - name: List files in front directory
+      run: ls -la front
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: front
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # Vous pouvez spécifier la version de Node.js que vous utilisez
 
-      - name: Run Tests
-        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
-        working-directory: front
+    - name: Install dependencies
+      run: npm install
+      working-directory: front
 
-      - name: Upload Test Coverage
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-coverage
-          path: front/coverage/
+    - name: Run Tests
+      run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      working-directory: front
