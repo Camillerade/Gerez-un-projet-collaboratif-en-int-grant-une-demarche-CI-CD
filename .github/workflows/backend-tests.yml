@@ -51,7 +51,7 @@ jobs:
       if: success()
 
     - name: Build Docker Image
-      run: docker build -t bobapp/backend:latest backend
+      run: docker build -t bobapp/back:latest backend
       if: success()
 
     - name: Push Docker Image to Docker Hub
