@@ -24,27 +24,31 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean install
+      working-directory: backend
 
     - name: Run Tests
       run: mvn test
+      working-directory: backend
 
     - name: Generate Test Report
       run: mvn jacoco:report
+      working-directory: backend
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4
       with:
         name: test-report
-        path: target/site/jacoco/
+        path: backend/target/site/jacoco/
 
     - name: SonarQube Scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: mvn sonar:sonar
+      working-directory: backend
 
     - name: Build Docker Image
-      run: docker build -t bobapp/backend:latest .
+      run: docker build -t bobapp/backend:latest backend
 
     - name: Push Docker Image to Docker Hub
       run: |
