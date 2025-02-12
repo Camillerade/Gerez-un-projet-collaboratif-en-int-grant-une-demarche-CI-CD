@@ -26,21 +26,21 @@ jobs:
       run: ls -la
 
     - name: List backend directory contents
-      run: ls -la backend || echo "backend directory does not exist"
+      run: ls -la back || echo "backend directory does not exist"
 
     - name: Build with Maven
       run: mvn clean install
-      working-directory: backend
+      working-directory: back
       if: success()
 
     - name: Run Tests
       run: mvn test
-      working-directory: backend
+      working-directory: back
       if: success()
 
     - name: Generate Test Report
       run: mvn jacoco:report
-      working-directory: backend
+      working-directory: back
       if: success()
 
     - name: Upload Test Report
@@ -55,7 +55,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: mvn sonar:sonar
-      working-directory: backend
+      working-directory: back
       if: success()
 
     - name: Build Docker Image
