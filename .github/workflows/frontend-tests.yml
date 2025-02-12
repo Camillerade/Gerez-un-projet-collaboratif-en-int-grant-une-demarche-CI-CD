@@ -28,7 +28,7 @@ jobs:
         node-version: '18'  # Spécifiez une version de Node.js compatible avec l'Angular CLI
 
     - name: Install dependencies
-      run: npm install
+      run: npm install --legacy-peer-deps
       working-directory: front
 
     - name: Run Tests
