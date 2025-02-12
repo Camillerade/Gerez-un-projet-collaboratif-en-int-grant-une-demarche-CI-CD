@@ -50,14 +50,6 @@ jobs:
         path: backend/target/site/jacoco/
       if: success()
 
-    - name: SonarQube Scan
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: mvn sonar:sonar
-      working-directory: back
-      if: success()
-
     - name: Build Docker Image
       run: docker build -t bobapp/backend:latest backend
       if: success()
