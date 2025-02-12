@@ -1,4 +1,4 @@
-name: CI/CD Pipeline backend
+name: Backend CI/CD Pipeline
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
       - main
 
 jobs:
-  test-backend:
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -20,6 +20,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '11'
+        distribution: 'adopt'
 
     - name: Build with Maven
       run: mvn clean install
@@ -35,3 +36,17 @@ jobs:
       with:
         name: test-report
         path: target/site/jacoco/
+
+    - name: SonarQube Scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: mvn sonar:sonar
+
+    - name: Build Docker Image
+      run: docker build -t bobapp/backend:latest .
+
+    - name: Push Docker Image to Docker Hub
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        docker push bobapp/backend:latest
