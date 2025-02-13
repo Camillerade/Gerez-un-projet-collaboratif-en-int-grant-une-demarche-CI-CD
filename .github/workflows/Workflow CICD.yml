@@ -1,4 +1,4 @@
-name: Workflow CI/CD Pipeline
+name: Complete CI/CD Pipeline
 
 on:
   push:
@@ -16,40 +16,61 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 11
+    - name: Set up JDK 11 (for Backend)
       uses: actions/setup-java@v3
       with:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: List root directory contents
-      run: ls -la
-
-    - name: List backend directory contents
-      run: ls -la back || echo "backend directory does not exist"
-
-    - name: Build with Maven
+    # ----------- Backend Steps -----------
+    
+    - name: Build Backend with Maven
       run: mvn clean install
       working-directory: back
       if: success()
 
-    - name: Run Tests
+    - name: Run Backend Tests
       run: mvn test
       working-directory: back
       if: success()
 
-    - name: Generate Test Report
+    - name: Generate Backend Test Report
       run: mvn jacoco:report
       working-directory: back
       if: success()
 
-    - name: Upload Test Report
+    - name: Upload Backend Test Report
       uses: actions/upload-artifact@v4
       with:
-        name: test-report
-        path: back/target/site/jacoco/  # Assurez-vous que le chemin correspond bien
+        name: backend-test-report
+        path: back/target/site/jacoco/
       if: success()
 
-    - name: Build Docker Image
+    - name: Build Backend Docker Image
       run: docker build -t bobapp/back:latest back
+      if: success()
+
+    # ----------- Frontend Steps -----------
+
+    - name: Set up Node.js (for Frontend)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Spécifiez la version de Node.js que vous utilisez
+
+    - name: Install Frontend Dependencies
+      run: npm install
+      working-directory: front  # Assurez-vous que le chemin est correct
+
+    - name: Build Frontend
+      run: npm run build
+      working-directory: front
+      if: success()
+
+    - name: Run Frontend Tests
+      run: npm test -- --watch=false  # Exécutez les tests sans watcher
+      working-directory: front
+      if: success()
+
+    - name: Create Frontend Docker Image
+      run: docker build -t bobapp/front:latest front
       if: success()
