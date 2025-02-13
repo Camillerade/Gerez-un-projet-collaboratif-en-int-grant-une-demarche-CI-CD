@@ -47,11 +47,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-report
-        path: backend/target/site/jacoco/
+        path: back/target/site/jacoco/  # Assurez-vous que le chemin correspond bien
       if: success()
 
     - name: Build Docker Image
       run: docker build -t bobapp/back:latest back
       if: success()
-
-   
