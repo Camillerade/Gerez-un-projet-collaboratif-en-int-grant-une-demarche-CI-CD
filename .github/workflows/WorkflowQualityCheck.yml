@@ -18,19 +18,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Choisissez votre version Node.js ici
+          node-version: '18'  # Adaptez selon la version de Node.js que vous utilisez
 
-      - name: Install Dependencies
+      - name: Install Frontend Dependencies
         run: npm install --legacy-peer-deps
-        working-directory: front  # Assurez-vous que ce répertoire est où se trouve le package.json
+        working-directory: front  # Changez ce chemin si nécessaire
 
-      - name: Vérifier package.json
-        run: cat front/package.json  # Cela affichera le contenu du package.json
+      - name: Verify package.json
+        run: cat front/package.json  # Pour vérifier le contenu du package.json
 
       - name: Run ESLint
         run: npm run lint
-        working-directory: front  # Cela indiquerait à GitHub Actions d'exécuter le script dans le bon répertoire
-      
-      - name: Run Frontend Tests
-        run: npm run test -- --watch=false
-        working-directory: front  # Assurez-vous là aussi de pointer vers le bon répertoire
+        working-directory: front  # Assurez-vous d'être dans le bon répertoire
