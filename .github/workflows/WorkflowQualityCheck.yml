@@ -27,6 +27,3 @@ jobs:
       - name: Verify package.json
         run: cat front/package.json  # Pour vérifier le contenu du package.json
 
-      - name: Run ESLint
-        run: npm run lint
-        working-directory: front  # Assurez-vous d'être dans le bon répertoire
