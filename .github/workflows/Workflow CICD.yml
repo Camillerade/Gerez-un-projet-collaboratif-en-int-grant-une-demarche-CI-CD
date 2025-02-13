@@ -55,7 +55,7 @@ jobs:
     - name: Set up Node.js (for Frontend)
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Spécifiez la version de Node.js que vous utilisez
+        node-version: '18'  # Mettre à jour à la version 18 ou supérieure
 
     - name: Install Frontend Dependencies
       run: npm install --legacy-peer-deps
