@@ -10,12 +10,12 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     jobs:
       test-backend:
         name: Test Backend
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         steps:
           - name: Checkout code
             uses: actions/checkout@v4
