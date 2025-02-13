@@ -9,61 +9,57 @@ on:
       - main 
 
 jobs:
-  test:
-    runs-on: windows-latest
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    jobs:
-      test-backend:
-        name: Test Backend
-        runs-on: windows-latest
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
+      - name: Set up JDK 11 (for Backend)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
 
-          - name: Set up JDK 11 (for Backend)
-            uses: actions/setup-java@v3
-            with:
-              java-version: '11'
-              distribution: 'adopt'
+      - name: Build Backend with Maven
+        run: mvn clean install
+        working-directory: back
 
-          - name: Build Backend with Maven
-            run: mvn clean install
-            working-directory: back
+      - name: Run Backend Tests
+        run: mvn test
+        working-directory: back
 
-          - name: Run Backend Tests
-            run: mvn test
-            working-directory: back
+      - name: Generate Backend Test Report
+        run: mvn jacoco:report
+        working-directory: back
 
-          - name: Generate Backend Test Report
-            run: mvn jacoco:report
-            working-directory: back
+      - name: Upload Backend Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: back/target/site/jacoco/
 
-          - name: Upload Backend Test Report
-            uses: actions/upload-artifact@v4
-            with:
-              name: backend-test-report
-              path: back/target/site/jacoco/
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      test-frontend:
-        name: Test Frontend
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
+      - name: Set up Node.js (for Frontend)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-          - name: Set up Node.js (for Frontend)
-            uses: actions/setup-node@v3
-            with:
-              node-version: '18'
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: front
 
-          - name: Install Frontend Dependencies
-            run: npm install --legacy-peer-deps
-            working-directory: front
+      - name: Build Frontend
+        run: npm run build
+        working-directory: front
 
-          - name: Build Frontend
-            run: npm run build
-            working-directory: front
-
-          - name: Run Frontend Tests (with Headless Chrome)
-            run: npm run test -- --watch=false --browsers=ChromeHeadless
-            working-directory: front
+      - name: Run Frontend Tests (with Headless Chrome)
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: front
