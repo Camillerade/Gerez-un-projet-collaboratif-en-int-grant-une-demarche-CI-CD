@@ -11,7 +11,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
+  
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -22,8 +22,7 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    # ----------- Backend Steps -----------
-    
+    # ----------- Backend Steps -----------    
     - name: Build Backend with Maven
       run: mvn clean install
       working-directory: back
@@ -55,19 +54,19 @@ jobs:
     - name: Set up Node.js (for Frontend)
       uses: actions/setup-node@v3
       with:
-        node-version: '18'  # Mettre à jour à la version 18 ou supérieure
+        node-version: '18'  # Utilisation de la version 18 ou supérieure
 
     - name: Install Frontend Dependencies
       run: npm install --legacy-peer-deps
-      working-directory: front  # Assurez-vous que le chemin est correct
+      working-directory: front
 
     - name: Build Frontend
       run: npm run build
       working-directory: front
       if: success()
 
-    - name: Run Frontend Tests
-      run: npm test -- --watch=false  # Exécutez les tests sans watch
+    - name: Run Frontend Tests (with Headless Chrome)
+      run: npm test -- --watch=false
       working-directory: front
       if: success()
 
