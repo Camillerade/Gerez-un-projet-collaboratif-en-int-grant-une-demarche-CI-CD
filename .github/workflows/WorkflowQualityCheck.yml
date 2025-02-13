@@ -1,0 +1,63 @@
+name: CI - Quality Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  quality-check-backend:
+    name: Quality Check Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 (for Backend)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Build Backend with Maven
+        run: mvn clean install
+        working-directory: back
+
+      - name: Run Backend Tests
+        run: mvn test
+        working-directory: back
+
+      - name: Run SonarQube Analysis
+        run: mvn sonar:sonar \
+          -Dsonar.projectKey=your_project_key \
+          -Dsonar.host.url=http://your_sonarqube_server \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dsonar.java.binaries=back/target/classes
+        working-directory: back
+
+  quality-check-frontend:
+    name: Quality Check Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (for Frontend)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: front
+
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: front
+
+      - name: Run Frontend Tests
+        run: npm run test -- --watch=false
+        working-directory: front
