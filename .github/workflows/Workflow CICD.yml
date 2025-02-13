@@ -54,7 +54,7 @@ jobs:
     - name: Set up Node.js (for Frontend)
       uses: actions/setup-node@v3
       with:
-        node-version: '18'  # Utilisation de la version 18 ou supérieure
+        node-version: '18'  # Assurez-vous que vous utilisez une version supportée
 
     - name: Install Frontend Dependencies
       run: npm install --legacy-peer-deps
@@ -66,10 +66,10 @@ jobs:
       if: success()
 
     - name: Run Frontend Tests (with Headless Chrome)
-      run: npm test -- --watch=false
+      run: npm run test -- --watch=false
       working-directory: front
       if: success()
-
+    
     - name: Create Frontend Docker Image
       run: docker build -t bobapp/front:latest front
       if: success()
