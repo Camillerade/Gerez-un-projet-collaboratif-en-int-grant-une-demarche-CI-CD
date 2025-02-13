@@ -66,10 +66,10 @@ jobs:
       if: success()
 
     - name: Run Frontend Tests (with Headless Chrome)
-      run: npm run test -- --watch=false
+      run: npm run test -- --watch=false --browsers=ChromeHeadless
       working-directory: front
       if: success()
-    
+
     - name: Create Frontend Docker Image
       run: docker build -t bobapp/front:latest front
       if: success()
