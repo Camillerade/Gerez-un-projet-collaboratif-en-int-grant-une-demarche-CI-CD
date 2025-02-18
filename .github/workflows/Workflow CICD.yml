@@ -49,12 +49,26 @@ jobs:
       run: docker build -t bobapp/back:latest back
       if: success()
 
+    - name: Set up SonarQube for Backend Analysis
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        organization: your-organization-name
+        token: ${{ secrets.SONARQUBE_TOKEN }}
+      env:
+        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        SONAR_HOST_URL: https://your.sonarqube.server.url
+
+    - name: Run SonarQube Analysis for Backend
+      run: mvn sonar:sonar -Dsonar.projectKey=your-backend-project-key
+      working-directory: back
+      if: success()
+
     # ----------- Frontend Steps -----------
 
     - name: Set up Node.js (for Frontend)
       uses: actions/setup-node@v3
       with:
-        node-version: '18'  # Assurez-vous que vous utilisez une version supportée
+        node-version: '18'  # Ensure you're using a supported version
 
     - name: Install Frontend Dependencies
       run: npm install --legacy-peer-deps
@@ -73,3 +87,22 @@ jobs:
     - name: Create Frontend Docker Image
       run: docker build -t bobapp/front:latest front
       if: success()
+
+    - name: Set up SonarQube for Frontend Analysis
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        organization: your-organization-name
+        token: ${{ secrets.SONARQUBE_TOKEN }}
+      env:
+        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        SONAR_HOST_URL: https://your.sonarqube.server.url
+
+    - name: Run SonarQube Analysis for Frontend
+      run: |
+        npm install sonar-scanner --save-dev
+        npx sonar-scanner \
+          -Dsonar.projectKey=your-frontend-project-key \
+          -Dsonar.sources=src
+      working-directory: front
+      if: success()
+
