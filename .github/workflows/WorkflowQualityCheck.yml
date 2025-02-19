@@ -1,44 +1,44 @@
 name: CI - Quality Check
 
 on:
-push:
-branches:
-- main
-pull_request:
-branches:
-- main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-quality-check-frontend:
-runs-on: ubuntu-latest
-steps:
-- name: Checkout code
-uses: actions/checkout@v4
+  quality-check-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-- name: Set up Node.js
-uses: actions/setup-node@v3
-with:
-node-version: '18'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Adaptez selon la version de Node.js que vous utilisez
 
-- name: Install Frontend Dependencies
-run: npm install --legacy-peer-deps
-working-directory: front
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: front # Changez ce chemin si nécessaire
 
-- name: Verify package.json
-run: cat front/package.json
+      - name: Verify package.json
+        run: cat front/package.json # Pour vérifier le contenu du package.json
 
-- name: Run SonarCloud Analysis
-uses: sonarsource/sonarcloud-github-action@v2
-with:
-projectBaseDir: .
-args: >
--Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
--Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
--Dsonar.token=${{ secrets.SONAR_TOKEN }}
--Dsonar.sources=back/src,front/src
--Dsonar.tests=back/src/test,front/src
--Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
--Dsonar.java.binaries=back/target/classes
-env:
-SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+      - name: SonarQube Scan
+        uses: sonarcloud/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: front
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.sources=.
+            -Dsonar.tests=.
+            -Dsonar.inclusions=**/*.js,**/*.ts
+            -Dsonar.exclusions=**/node_modules/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
