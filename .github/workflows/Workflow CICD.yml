@@ -26,28 +26,23 @@ jobs:
     - name: Build Backend with Maven
       run: mvn clean install
       working-directory: back
-      if: success()
 
     - name: Run Backend Tests
       run: mvn test
       working-directory: back
-      if: success()
 
     - name: Generate Backend Test Report
       run: mvn jacoco:report
       working-directory: back
-      if: success()
 
     - name: Upload Backend Test Report
       uses: actions/upload-artifact@v4
       with:
         name: backend-test-report
         path: back/target/site/jacoco/
-      if: success()
 
     - name: Build Backend Docker Image
       run: docker build -t bobapp/back:latest back
-      if: success()
 
     # ----------- Frontend Steps -----------
 
@@ -63,30 +58,26 @@ jobs:
     - name: Build Frontend
       run: npm run build
       working-directory: front
-      if: success()
 
     - name: Run Frontend Tests (with Headless Chrome)
       run: npm run test -- --watch=false --browsers=ChromeHeadless
       working-directory: front
-      if: success()
 
     - name: Create Frontend Docker Image
       run: docker build -t bobapp/front:latest front
-      if: success()
 
     # ----------- SonarCloud Analysis -----------
 
     - name: Run SonarCloud Analysis
-  uses: sonarsource/sonarcloud-github-action@v2
-  with:
-    projectBaseDir: .
-    args: >
-      -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
-      -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
-      -Dsonar.token=${{ secrets.SONAR_TOKEN }}  # Vérifier
-      -Dsonar.sources=back/src,front/src 
-      -Dsonar.tests=back/src/test,front/src/test 
-      -Dsonar.inclusions=**/*.java,**/*.js
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Assurez-vous que cela est configuré correctement
-
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}  # Vérifier
+          -Dsonar.sources=back/src,front/src 
+          -Dsonar.tests=back/src/test,front/src/test 
+          -Dsonar.inclusions=**/*.java,**/*.js
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Assurez-vous que cela est configuré correctement
