@@ -49,25 +49,21 @@ jobs:
       run: docker build -t bobapp/back:latest back
       if: success()
 
-    - name: Set up SonarQube for Backend Analysis
+    - name: Run SonarQube Analysis for Backend
       uses: sonarsource/sonarcloud-github-action@v2
       with:
-        sonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
-        sonarProjectKey: ${{ secrets.SONAR_BACKEND_PROJECT_KEY }}
-        sonarToken: ${{ secrets.SONARQUBE_TOKEN }}
         projectBaseDir: back
-
-    - name: Run SonarQube Analysis for Backend
-      run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_BACKEND_PROJECT_KEY }} -Dsonar.host.url=https://sonarcloud.io
-      working-directory: back
-      if: success()
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+          -Dsonar.projectKey=${{ secrets.SONAR_BACKEND_PROJECT_KEY }} 
+          -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
 
     # ----------- Frontend Steps -----------
 
     - name: Set up Node.js (for Frontend)
       uses: actions/setup-node@v3
       with:
-        node-version: '18'  # Ensure you're using a supported version
+        node-version: '18'
 
     - name: Install Frontend Dependencies
       run: npm install --legacy-peer-deps
@@ -87,21 +83,13 @@ jobs:
       run: docker build -t bobapp/front:latest front
       if: success()
 
-    - name: Set up SonarQube for Frontend Analysis
-      uses: sonarsource/sonarcloud-github-action@v2
-      with:
-        sonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
-        sonarProjectKey: ${{ secrets.SONAR_FRONTEND_PROJECT_KEY }}
-        sonarToken: ${{ secrets.SONARQUBE_TOKEN }}
-        projectBaseDir: front
-
     - name: Run SonarQube Analysis for Frontend
       run: |
         npm install sonar-scanner --save-dev
         npx sonar-scanner \
           -Dsonar.projectKey=${{ secrets.SONAR_FRONTEND_PROJECT_KEY }} \
           -Dsonar.sources=src \
+          -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} \
           -Dsonar.host.url=https://sonarcloud.io
       working-directory: front
       if: success()
-
