@@ -58,7 +58,7 @@ jobs:
         projectBaseDir: back
 
     - name: Run SonarQube Analysis for Backend
-      run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_BACKEND_PROJECT_KEY }}
+      run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_BACKEND_PROJECT_KEY }} -Dsonar.host.url=https://sonarcloud.io
       working-directory: back
       if: success()
 
@@ -100,6 +100,8 @@ jobs:
         npm install sonar-scanner --save-dev
         npx sonar-scanner \
           -Dsonar.projectKey=${{ secrets.SONAR_FRONTEND_PROJECT_KEY }} \
-          -Dsonar.sources=src
+          -Dsonar.sources=src \
+          -Dsonar.host.url=https://sonarcloud.io
       working-directory: front
       if: success()
+
