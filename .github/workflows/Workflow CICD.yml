@@ -75,7 +75,7 @@ jobs:
         args: >
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}  # Vérifier
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=back/src,front/src 
           -Dsonar.tests=back/src/test,front/src/test 
           -Dsonar.inclusions=**/*.java,**/*.js
