@@ -52,14 +52,13 @@ jobs:
     - name: Set up SonarQube for Backend Analysis
       uses: sonarsource/sonarcloud-github-action@v2
       with:
-        organization: your-organization-name
-        token: ${{ secrets.SONARQUBE_TOKEN }}
-      env:
-        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-        SONAR_HOST_URL: https://your.sonarqube.server.url
+        sonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
+        sonarProjectKey: ${{ secrets.SONAR_BACKEND_PROJECT_KEY }}
+        sonarToken: ${{ secrets.SONARQUBE_TOKEN }}
+        projectBaseDir: back
 
     - name: Run SonarQube Analysis for Backend
-      run: mvn sonar:sonar -Dsonar.projectKey=your-backend-project-key
+      run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_BACKEND_PROJECT_KEY }}
       working-directory: back
       if: success()
 
@@ -91,18 +90,16 @@ jobs:
     - name: Set up SonarQube for Frontend Analysis
       uses: sonarsource/sonarcloud-github-action@v2
       with:
-        organization: your-organization-name
-        token: ${{ secrets.SONARQUBE_TOKEN }}
-      env:
-        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-        SONAR_HOST_URL: https://your.sonarqube.server.url
+        sonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
+        sonarProjectKey: ${{ secrets.SONAR_FRONTEND_PROJECT_KEY }}
+        sonarToken: ${{ secrets.SONARQUBE_TOKEN }}
+        projectBaseDir: front
 
     - name: Run SonarQube Analysis for Frontend
       run: |
         npm install sonar-scanner --save-dev
         npx sonar-scanner \
-          -Dsonar.projectKey=your-frontend-project-key \
+          -Dsonar.projectKey=${{ secrets.SONAR_FRONTEND_PROJECT_KEY }} \
           -Dsonar.sources=src
       working-directory: front
       if: success()
-
