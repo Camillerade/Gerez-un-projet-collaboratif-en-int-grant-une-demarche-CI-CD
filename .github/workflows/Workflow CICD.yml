@@ -80,4 +80,4 @@ jobs:
           -Dsonar.tests=back/src/test,front/src/test 
           -Dsonar.inclusions=**/*.java,**/*.js
       env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Assurez-vous que cela est configuré correctement
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
