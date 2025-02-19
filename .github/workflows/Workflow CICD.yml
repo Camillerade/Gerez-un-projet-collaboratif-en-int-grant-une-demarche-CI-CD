@@ -76,18 +76,14 @@ jobs:
 
     # ----------- SonarCloud Analysis -----------
 
-    -- name: Run SonarCloud Analysis
-  uses: sonarsource/sonarcloud-github-action@v2
-  with:
-    projectBaseDir: .
-    args: >
-      -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
-      -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
-      -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-      -Dsonar.sources=back/src,front/src 
-      -Dsonar.tests=back/src/test,front/src/test 
-      -Dsonar.inclusions=**/*.java,**/*.js
-
-          -Dsonar.tests=back/src/test,front/src/test # Ajuste selon ta structure de projet
-          -Dsonar.inclusions=**/*.java,**/*.js # Inclure les fichiers à analyser
-
+    - name: Run SonarCloud Analysis # Corrigé ici (rempli les espaces)
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.sources=back/src,front/src 
+          -Dsonar.tests=back/src/test,front/src/test 
+          -Dsonar.inclusions=**/*.java,**/*.js
