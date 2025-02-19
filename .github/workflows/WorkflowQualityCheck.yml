@@ -37,6 +37,16 @@ jobs:
         run: mvn clean install
         working-directory: back
 
+      - name: Nettoyer les dépendances
+        run: |
+          npm cache clean --force
+          mvn clean
+
+      - name: Exécuter les tests unitaires
+        run: |
+          npm run test:unit
+          mvn test
+
       - name: Run SonarCloud Analysis
         uses: sonarsource/sonarcloud-github-action@v2
         with:
