@@ -28,7 +28,7 @@ jobs:
         run: |
           cat front/package.json
 
-      - name: SonarQube Scan
+      - name: SonarQube Scan Frontend
         uses: sonarcloud/sonarcloud-github-action@v2
         with:
           projectBaseDir: front
@@ -40,6 +40,41 @@ jobs:
             -Dsonar.tests=.
             -Dsonar.inclusions=**/*.js,**/*.ts
             -Dsonar.exclusions=**/node_modules/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  quality-check-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11' # Adaptez selon la version de Java que vous utilisez
+
+      - name: Install Backend Dependencies
+        run: mvn clean install
+        working-directory: back # Changez ce chemin si nécessaire
+
+      - name: Verify pom.xml
+        run: |
+          cat back/pom.xml
+
+      - name: SonarQube Scan Backend
+        uses: sonarcloud/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: back
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.sources=.
+            -Dsonar.tests=.
+            -Dsonar.inclusions=**/*.java
+            -Dsonar.exclusions=**/target/**
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
