@@ -79,7 +79,8 @@ jobs:
           -Dsonar.sources=back/src,front/src
           -Dsonar.tests=back/src/test,front/src
           -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
-
           -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
+          -Dsonar.java.binaries=back/target/classes
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
