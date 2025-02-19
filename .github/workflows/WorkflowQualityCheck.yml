@@ -49,6 +49,21 @@ jobs:
             -Dsonar.tests=back/src/test,front/src
             -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
             -Dsonar.java.binaries=back/target/classes
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+
+      - name: Vérifier les résultats de l'analyse SonarCloud
+        run: |
+          if [ $(sonarcloud status) -eq 1 ]; then
+            echo "Analyse SonarCloud échouée"
+            exit 1
+          else
+            echo "Analyse SonarCloud réussie"
+          fi
+
+      - name: Envoyer les résultats de l'analyse à Slack
+        uses: slack/github-actions@v1
+        with:
+          channel: '#my-channel'
+          message: 'Analyse SonarCloud terminée'
