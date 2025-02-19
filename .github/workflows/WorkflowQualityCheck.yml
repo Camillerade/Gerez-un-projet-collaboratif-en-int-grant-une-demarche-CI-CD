@@ -73,7 +73,7 @@ jobs:
           fi
 
       - name: Envoyer les résultats de l'analyse à Slack
-        uses: slack/github-actions@v1
+        uses: slack/github-actions@v2
         with:
           channel: '#my-channel'
           message: 'Analyse SonarCloud terminée'
