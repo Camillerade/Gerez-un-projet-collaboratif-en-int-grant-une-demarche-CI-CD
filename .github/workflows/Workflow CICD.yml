@@ -76,9 +76,10 @@ jobs:
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.sources=back/src,front/src 
-          -Dsonar.tests=front/src/**/*test*.ts,back/src/test/java
-          -Dsonar.exclusions=front/src/**/*test*.ts
+          -Dsonar.sources=back/src,front/src
+          -Dsonar.tests=back/src/test,front/src
+          -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
+
           -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
