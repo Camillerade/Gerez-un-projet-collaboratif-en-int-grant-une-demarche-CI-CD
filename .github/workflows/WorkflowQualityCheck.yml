@@ -18,29 +18,28 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Adaptez selon la version de Node.js que vous utilisez
+          node-version: '18'
 
       - name: Install Frontend Dependencies
         run: npm install --legacy-peer-deps
-        working-directory: front  # Changez ce chemin si nécessaire
+        working-directory: front
 
       - name: Verify package.json
-        run: cat front/package.json  # Pour vérifier le contenu du package.json
+        run: cat front/package.json
 
       - name: Run SonarQube Analysis
         uses: sonarsource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
         with:
-          projectBaseDir: front
           args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.organization=${SONAR_ORGANIZATION}
+            -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+            -Dsonar.token=${SONAR_TOKEN}
             -Dsonar.sources=front/src
             -Dsonar.tests=front/src/test
             -Dsonar.inclusions=**/*.js,**/*.ts
             -Dsonar.exclusions=**/node_modules/**
             -Dsonar.typescript.path=front/tsconfig.json
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-        SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
