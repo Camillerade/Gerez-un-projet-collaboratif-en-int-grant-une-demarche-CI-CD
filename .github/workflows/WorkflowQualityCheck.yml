@@ -1,28 +1,31 @@
 name: CI - Quality Check
 
 on:
-push:
-branches:
-- main
-pull_request:
-branches:
-- main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-quality-check-frontend:
-runs-on: ubuntu-latest
-steps:
-- name: Checkout code
-uses: actions/checkout@v4
+  quality-check-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-- name: Set up Node.js
-uses: actions/setup-node@v3
-with:
-node-version: '18' # Adaptez selon la version de Node.js que vous utilisez
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Adaptez selon la version de Node.js que vous utilisez
 
-- name: Install Frontend Dependencies
-run: npm install --legacy-peer-deps
-working-directory: front # Changez ce chemin si nécessaire
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: front # Changez ce chemin si nécessaire
 
-- name: Verify package.json
-run: cat front/package.json # Pour vérifier le contenu du package.json 
+      - name: Verify package.json
+        run: |
+          cat front/package.json
+
+      # Ajoutez ici les étapes suivantes pour analyser la qualité de votre code
