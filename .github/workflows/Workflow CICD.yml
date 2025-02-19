@@ -49,15 +49,6 @@ jobs:
       run: docker build -t bobapp/back:latest back
       if: success()
 
-    - name: Run SonarQube Analysis for Backend
-      uses: sonarsource/sonarcloud-github-action@v2
-      with:
-        projectBaseDir: back
-        args: >
-          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
-          -Dsonar.projectKey=${{ secrets.SONAR_BACKEND_PROJECT_KEY }} 
-          -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
-
     # ----------- Frontend Steps -----------
 
     - name: Set up Node.js (for Frontend)
@@ -83,13 +74,17 @@ jobs:
       run: docker build -t bobapp/front:latest front
       if: success()
 
-    - name: Run SonarQube Analysis for Frontend
-      run: |
-        npm install sonar-scanner --save-dev
-        npx sonar-scanner \
-          -Dsonar.projectKey=${{ secrets.SONAR_FRONTEND_PROJECT_KEY }} \
-          -Dsonar.sources=src \
-          -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} \
-          -Dsonar.host.url=https://sonarcloud.io
-      working-directory: front
-      if: success()
+    # ----------- SonarCloud Analysis -----------
+
+    - name: Run SonarCloud Analysis
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.sources=back/src,front/src # Ajuste selon ta structure de projet
+          -Dsonar.tests=back/src/test,front/src/test # Ajuste selon ta structure de projet
+          -Dsonar.inclusions=**/*.java,**/*.js # Inclure les fichiers à analyser
+
