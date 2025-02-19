@@ -28,4 +28,18 @@ jobs:
         run: |
           cat front/package.json
 
-      # Ajoutez ici les étapes suivantes pour analyser la qualité de votre code
+      - name: SonarQube Scan
+        uses: sonarcloud/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: front
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.sources=.
+            -Dsonar.tests=.
+            -Dsonar.inclusions=**/*.js,**/*.ts
+            -Dsonar.exclusions=**/node_modules/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
