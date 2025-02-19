@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch: # Pour permettre le déclenchement manuel
+  workflow_dispatch: # Permet le déclenchement manuel
 
 jobs:
   analyze-code:
@@ -17,16 +17,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11 (for analysis)
+      - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Set up Node.js (for analysis)
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+
+      - name: Build Backend
+        run: mvn clean package
+        working-directory: back
+
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: front
+
+      - name: Build Frontend
+        run: npm run build
+        working-directory: front
 
       - name: Run SonarCloud Analysis
         uses: sonarsource/sonarcloud-github-action@v2
