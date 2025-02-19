@@ -77,7 +77,7 @@ jobs:
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=back/src,front/src 
-          -Dsonar.tests=front/src/test,back/src/test/java
+          -Dsonar.tests=front/src,back/src/test/java
           -Dsonar.inclusions=**/*.java,**/*.js
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
