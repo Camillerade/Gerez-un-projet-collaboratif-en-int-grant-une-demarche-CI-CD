@@ -80,19 +80,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Run SonarCloud Analysis
-        uses: sonarsource/sonarcloud-github-action@v2
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=back/src,front/src
-            -Dsonar.tests=back/src/test,front/src
-            -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
-            -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
-            -Dsonar.java.binaries=back/target/classes
+   - name: Run SonarCloud Analysis
+  uses: sonarsource/sonarcloud-github-action@v2
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+    SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+  with:
+    projectBaseDir: .
+    args: >
+      -Dsonar.sources=back/src,front/src 
+      -Dsonar.tests=back/src/test,front/src 
+      -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts 
+      -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
+
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
