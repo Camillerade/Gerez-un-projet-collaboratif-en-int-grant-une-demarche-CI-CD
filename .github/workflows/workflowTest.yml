@@ -1,4 +1,4 @@
-name: Test Pipeline
+name: Test Workflow
 
 on:
   push:
@@ -10,35 +10,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-backend:
-    name: Test Backend
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up JDK 11 (for Backend)
-        uses: actions/setup-java@v3
+
+      # Frontend
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
-          java-version: '11'
-          distribution: 'adopt'
-      - name: Build Backend with Maven
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+        working-directory: front
+      - name: Build and test frontend
+        run: npm run build && npm run test
+        working-directory: front
+
+      # Backend
+      - name: Set up Maven
+        uses: actions/setup-maven@v2
+        with:
+          maven-version: '3.8.6'
+      - name: Build and test backend
         run: mvn clean install
         working-directory: back
-      - name: Run Backend Tests
-        run: mvn test
-        working-directory: back
-      - name: Generate Backend Test Report
-        run: mvn jacoco:report
-        working-directory: back
-      - name: Upload Backend Test Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-test-report
-          path: back/target/site/jacoco
-      - name: Analyser les dépendances (Backend)
-        run: mvn dependency:analyze
-        working-directory: back
-      - name: SonarQube Scan
+
+      # SonarQube
+      - name: SonarQube analysis
         uses: sonarcloud/sonarcloud-github-action@v1
         with:
           sonar-cloud-token: ${{ secrets.SONARCLOUD_TOKEN }}
@@ -48,23 +48,3 @@ jobs:
           sonar-source: back/src/main/java
           sonar-test: back/src/test/java
           sonar-coverage: back/target/site/jacoco
-
-  test-frontend:
-    name: Test Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Node.js (for Frontend)
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - name: Installer dépendances (Frontend)
-        run: npm install --legacy-peer-deps
-        working-directory: front
-      - name: Compiler Frontend
-        run: npm run build
-        working-directory: front
-      - name: Tester Frontend
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
-        working-directory: front
