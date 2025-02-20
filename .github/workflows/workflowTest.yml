@@ -35,6 +35,9 @@ jobs:
         with:
           name: backend-test-report
           path: back/target/site/jacoco
+      - name: Analyser les dépendances (Backend)
+        run: mvn dependency:analyze
+        working-directory: back
       - name: SonarQube Scan
         uses: sonarcloud/sonarcloud-github-action@v1
         with:
@@ -56,12 +59,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install Frontend Dependencies
+      - name: Installer dépendances (Frontend)
         run: npm install --legacy-peer-deps
         working-directory: front
-      - name: Build Frontend
+      - name: Compiler Frontend
         run: npm run build
         working-directory: front
-      - name: Run Frontend Tests (with Headless Chrome)
+      - name: Tester Frontend
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
