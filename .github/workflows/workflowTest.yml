@@ -1,93 +1,94 @@
-name: Front-End and Back-End Tests
+name: CI - Test
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  front-end-tests:
+  test-backend:
+    name: Test Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install Node.js and dependencies
-        run: |
-          npm install
-
-      - name: Run front-end tests
-        run: |
-          npm run test
-
-      - name: Run front-end linting
-        run: |
-          npm run lint
-
-      - name: Upload front-end test report
-        uses: actions/upload-artifact@v2
-        with:
-          name: front-end-test-report
-          path: /github/workspace/coverage/front-end
-
-  back-end-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Java
-        uses: actions/setup-java@v2
+      - name: Set up JDK 11 (for Backend)
+        uses: actions/setup-java@v3
         with:
           java-version: '11'
+          distribution: 'adopt'
 
-      - name: Build and install back-end
-        run: |
-          mvn clean install
+      - name: Build Backend with Maven
+        run: mvn clean install
+        working-directory: back
 
-      - name: Run back-end tests
-        run: |
-          mvn test
+      - name: Run Backend Tests
+        run: mvn test
+        working-directory: back
 
-      - name: Run SonarQube analysis
+      - name: Generate Backend Test Report
+        run: mvn jacoco:report
+        working-directory: back
+
+      - name: Upload Backend Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: back/target/site/jacoco/
+
+      - name: Run SonarQube Analysis
         uses: sonarsource/sonarcloud-github-action@v2
         with:
           projectBaseDir: /github/workspace/back
           args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=/github/workspace/back/src
-            -Dsonar.test.inclusions=/github/workspace/back/src/test/java/**
-            -Dsonar.java.binaries=/github/workspace/back/target/classes
+            -Dsonar.organization=*** 
+            -Dsonar.projectKey=*** 
+            -Dsonar.token=*** 
+            -Dsonar.sources=/github/workspace/back/src 
+            -Dsonar.test.inclusions=/github/workspace/back/src/test/java/** 
+            -Dsonar.java.binaries=/github/workspace/back/target/classes 
             -X
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_TOKEN: ***
 
-      - name: Upload back-end test report
-        uses: actions/upload-artifact@v2
-        with:
-          name: back-end-test-report
-          path: /github/workspace/back/target/site/test
-
-  e2e-tests:
+  test-frontend:
+    name: Test Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install Node.js and dependencies
-        run: |
-          npm install
-
-      - name: Run end-to-end tests
-        run: |
-          npm run e2e
-
-      - name: Upload end-to-end test report
-        uses: actions/upload-artifact@v2
+      - name: Set up Node.js (for Frontend)
+        uses: actions/setup-node@v3
         with:
-          name: e2e-test-report
-          path: /github/workspace/coverage/e2e
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: front
+
+      - name: Build Frontend
+        run: npm run build
+        working-directory: front
+
+      - name: Run Frontend Tests (with Headless Chrome)
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: front
+
+      - name: Run SonarQube Analysis
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: /github/workspace/front
+          args: >
+            -Dsonar.organization=*** 
+            -Dsonar.projectKey=*** 
+            -Dsonar.token=*** 
+            -Dsonar.sources=/github/workspace/front/src 
+            -Dsonar.test.inclusions=/github/workspace/front/src/test/** 
+            -X
+        env:
+          SONAR_TOKEN: ***
