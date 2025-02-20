@@ -49,7 +49,7 @@ jobs:
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=back/src
-            -Dsonar.tests=back/src/test
+            -Dsonar.test.inclusions=back/src/test/java/**
             -Dsonar.java.binaries=back/target/classes
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -88,6 +88,6 @@ jobs:
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
             -Dsonar.sources=front/src
-            -Dsonar.tests=front/src/test
+            -Dsonar.test.inclusions=front/src/test/**
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
