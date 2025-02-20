@@ -1,4 +1,4 @@
-name: Complete CI/CD Pipeline
+name: Test et Maintenance
 
 on:
   push:
@@ -7,11 +7,12 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: 0 0 * * *
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -22,7 +23,6 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    # ----------- Backend Steps -----------    
     - name: Build Backend with Maven
       run: mvn clean install
       working-directory: back
@@ -41,11 +41,6 @@ jobs:
         name: backend-test-report
         path: back/target/site/jacoco/
 
-    - name: Build Backend Docker Image
-      run: docker build -t bobapp/back:latest back
-
-    # ----------- Frontend Steps -----------
-
     - name: Set up Node.js (for Frontend)
       uses: actions/setup-node@v3
       with:
@@ -63,10 +58,17 @@ jobs:
       run: npm run test -- --watch=false --browsers=ChromeHeadless
       working-directory: front
 
-    - name: Create Frontend Docker Image
-      run: docker build -t bobapp/front:latest front
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    # ----------- SonarCloud Analysis -----------
+    - name: Update dependencies
+      run: |
+        npm update
+        mvn dependency:analyze
+      working-directory: .
 
     - name: Run SonarCloud Analysis
       uses: sonarsource/sonarcloud-github-action@v2
@@ -78,9 +80,19 @@ jobs:
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=back/src,front/src
           -Dsonar.tests=back/src/test,front/src
-          -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
           -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
-          -Dsonar.java.binaries=back/target/classes
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+
+    - name: Run Code Formatter
+      run: |
+        npm run format
+        mvn fmt:format
+      working-directory: .
+
+    - name: Run Code Linter
+      run: |
+        npm run lint
+        mvn checkstyle:checkstyle
+      working-directory: .
