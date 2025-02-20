@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Set up JDK 11 (for Backend)
         uses: actions/setup-java@v3
         with:
@@ -41,14 +41,14 @@ jobs:
           path: back/target/site/jacoco/
 
       - name: List files in back directory
-        run: ls -la back  # Cela affichera le contenu du dossier 'back'
+        run: ls -la back  
 
       - name: Build Docker Image
         uses: docker/build-push-action@v3
         with:
-          context: back                 # Contexte correct
-          file: back/Dockerfile         # Spécifiez le chemin du Dockerfile
-          push: false                   # Pas de push à ce stade
+          context: back                 
+          file: back/Dockerfile         
+          push: false                  
           tags: local/bobapp:latest
 
       - name: Login to Docker Hub
@@ -60,4 +60,4 @@ jobs:
       - name: Push Docker Image
         run: |
           docker tag local/bobapp:latest ${{ secrets.DOCKER_USERNAME }}/bobapp:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/bobapp:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/bobapp:latest  
