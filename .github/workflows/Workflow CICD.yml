@@ -69,17 +69,19 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: List contents of back directory
-      run: ls -la back  # Debug step to ensure Dockerfile is present
-
-    - name: Check Dockerfile permissions
-      run: ls -l back/Dockerfile  # Verify permissions of the Dockerfile
+    # Debugging Steps
+    - name: Debugging Info
+      run: |
+        echo "Contents of back directory:"
+        ls -la back
+        echo "Checking Dockerfile presence:"
+        ls -l back/Dockerfile
 
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v3
       with:
-        context: back  # Directory containing the Dockerfile
-        file: Dockerfile  # This should refer correctly to the Dockerfile
+        context: back          # Répertoire contenant le Dockerfile
+        file: Dockerfile       # Référence au Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/bobapp:latest
 
