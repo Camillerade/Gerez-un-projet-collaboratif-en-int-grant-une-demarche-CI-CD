@@ -84,14 +84,7 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@v2
         with:
           projectBaseDir: .
-          args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=back/src,front/src
-            -Dsonar.tests=back/src/test,front/src
-            -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
-            -Dsonar.exclusions=**/node_modules/**
+          args: "-Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.sources=back/src,front/src -Dsonar.tests=back/src/test,front/src -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts -Dsonar.exclusions=**/node_modules/**"
       - name: Upload SonarCloud Report
         uses: actions/upload-artifact@v4
         with:
