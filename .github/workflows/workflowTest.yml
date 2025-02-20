@@ -90,6 +90,6 @@ jobs:
         with:
           name: sonarcloud-report
           path: sonarcloud-report.json
-    env:
+      env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+        JAVA_HOME: ${{ env.JAVA_HOME }}
