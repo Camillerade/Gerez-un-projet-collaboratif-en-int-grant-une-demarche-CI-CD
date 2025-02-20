@@ -45,15 +45,15 @@ jobs:
         with:
           projectBaseDir: /github/workspace/back
           args: >
-            -Dsonar.organization=*** 
-            -Dsonar.projectKey=*** 
-            -Dsonar.token=*** 
-            -Dsonar.sources=/github/workspace/back/src 
-            -Dsonar.test.inclusions=/github/workspace/back/src/test/java/** 
-            -Dsonar.java.binaries=/github/workspace/back/target/classes 
+            -Dsonar.organization=your-organization
+            -Dsonar.projectKey=your-project-key
+            -Dsonar.token=your-sonar-token
+            -Dsonar.sources=/github/workspace/back/src
+            -Dsonar.test.inclusions=/github/workspace/back/src/test/java/**
+            -Dsonar.java.binaries=/github/workspace/back/target/classes
             -X
         env:
-          SONAR_TOKEN: ***
+          SONAR_TOKEN: your-sonar-token
 
   test-frontend:
     name: Test Frontend
@@ -84,11 +84,11 @@ jobs:
         with:
           projectBaseDir: /github/workspace/front
           args: >
-            -Dsonar.organization=*** 
-            -Dsonar.projectKey=*** 
-            -Dsonar.token=*** 
-            -Dsonar.sources=/github/workspace/front/src 
-            -Dsonar.test.inclusions=/github/workspace/front/src/test/** 
+            -Dsonar.organization=your-organization
+            -Dsonar.projectKey=your-project-key
+            -Dsonar.token=your-sonar-token
+            -Dsonar.sources=/github/workspace/front/src
+            -Dsonar.test.inclusions=/github/workspace/front/src/test/**
             -X
         env:
-          SONAR_TOKEN: ***
+          SONAR_TOKEN: your-sonar-token
