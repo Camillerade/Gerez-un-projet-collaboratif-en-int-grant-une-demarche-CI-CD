@@ -40,6 +40,21 @@ jobs:
           name: backend-test-report
           path: back/target/site/jacoco/
 
+      - name: Run SonarQube Analysis
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: back
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.sources=back/src
+            -Dsonar.tests=back/src/test
+            -Dsonar.java.binaries=back/target/classes
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+
   test-frontend:
     name: Test Frontend
     runs-on: ubuntu-latest
@@ -63,3 +78,16 @@ jobs:
       - name: Run Frontend Tests (with Headless Chrome)
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
+
+      - name: Run SonarQube Analysis
+        uses: sonarsource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: front
+          args: >
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.sources=front/src
+            -Dsonar.tests=front/src/test
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
