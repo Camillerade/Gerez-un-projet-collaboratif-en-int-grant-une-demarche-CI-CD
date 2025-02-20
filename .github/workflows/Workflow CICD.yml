@@ -1,86 +1,80 @@
-Complete CI/CD Pipeline
+name: Complete CI/CD Pipeline
 
 on:
-push:
-branches:
-- main
-pull_request:
-branches:
-- main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-build-and-test:
-runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest
 
-steps:
-- name: Checkout code
-uses: actions/checkout@v4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-- name: Set up JDK 11 (for Backend)
-uses: actions/setup-java@v3
-with:
-java-version: '11'
-distribution: 'adopt'
+    - name: Set up JDK 11 (for Backend)
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
 
-# ----------- Backend Steps -----------
-- name: Build Backend with Maven
-run: mvn clean install
-working-directory: back
+    # ----------- Backend Steps -----------    
+    - name: Build Backend with Maven
+      run: mvn clean install
+      working-directory: back
 
-- name: Run Backend Tests
-run: mvn test
-working-directory: back
+    - name: Run Backend Tests
+      run: mvn test
+      working-directory: back
 
-- name: Generate Backend Test Report
-run: mvn jacoco:report
-working-directory: back
+    - name: Generate Backend Test Report
+      run: mvn jacoco:report
+      working-directory: back
 
-- name: Upload Backend Test Report
-uses: actions/upload-artifact@v4
-with:
-name: backend-test-report
-path: back/target/site/jacoco/
+    - name: Upload Backend Test Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-test-report
+        path: back/target/site/jacoco/
 
-- name: Build Backend Docker Image
-run: docker build -t bobapp/back:latest back
+    # ----------- Frontend Steps -----------
 
-# ----------- Frontend Steps -----------
+    - name: Set up Node.js (for Frontend)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
 
-- name: Set up Node.js (for Frontend)
-uses: actions/setup-node@v3
-with:
-node-version: '18'
+    - name: Install Frontend Dependencies
+      run: npm install --legacy-peer-deps
+      working-directory: front
 
-- name: Install Frontend Dependencies
-run: npm install --legacy-peer-deps
-working-directory: front
+    - name: Build Frontend
+      run: npm run build
+      working-directory: front
 
-- name: Build Frontend
-run: npm run build
-working-directory: front
+    - name: Run Frontend Tests
+      run: npm run test -- --watch=false --browsers=ChromeHeadless
+      working-directory: front
 
-- name: Run Frontend Tests (with Headless Chrome)
-run: npm run test -- --watch=false --browsers=ChromeHeadless
-working-directory: front
+    # ----------- SonarCloud Analysis -----------
 
-- name: Create Frontend Docker Image
-run: docker build -t bobapp/front:latest front
-
-# ----------- SonarCloud Analysis -----------
-
-- name: Run SonarCloud Analysis
-uses: sonarsource/sonarcloud-github-action@v2
-with:
-projectBaseDir: .
-args: >
--Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
--Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
--Dsonar.token=${{ secrets.SONAR_TOKEN }}
--Dsonar.sources=back/src,front/src
--Dsonar.tests=back/src/test,front/src
--Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
--Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
--Dsonar.java.binaries=back/target/classes
-env:
-SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
+    - name: Run SonarCloud Analysis
+      uses: sonarsource/sonarcloud-github-action@v2
+      with:
+        projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.sources=back/src,front/src
+          -Dsonar.tests=back/src/test,front/src
+          -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
+          -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
+          -Dsonar.java.binaries=back/target/classes
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
