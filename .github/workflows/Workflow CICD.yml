@@ -72,7 +72,8 @@ jobs:
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v3
       with:
-        context: .
+        context: back  # Update this if your Dockerfile is located somewhere else
+        dockerfile: Dockerfile  # Ensure this matches the actual Dockerfile name
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/bobapp:latest
 
