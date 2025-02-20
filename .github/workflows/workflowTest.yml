@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-backend:
-    name: Test Backend
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,31 +30,6 @@ jobs:
       - name: Test Backend d'Intégration
         run: mvn integration-test
         working-directory: back
-      - name: Générer rapport de tests
-        run: mvn jacoco:report
-        working-directory: back
-      - name: Télécharger rapport de tests
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-test-report
-          path: back/target/site/jacoco
-      - name: SonarQube Scan
-        uses: sonarcloud/sonarcloud-github-action@v2
-        with:
-          sonar-cloud-token: ${{ secrets.SONARCLOUD_TOKEN }}
-          sonar-organization: ${{ secrets.SONARCLOUD_ORGANIZATION }}
-          sonar-project-key: ${{ secrets.SONARCLOUD_PROJECT_KEY }}
-          sonar-branch: main
-          sonar-source: back/src/main/java
-          sonar-test: back/src/test/java
-          sonar-coverage: back/target/site/jacoco
-
-  test-frontend:
-    name: Test Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
       - name: Set up Node.js (for Frontend)
         uses: actions/setup-node@v3
         with:
@@ -68,14 +43,3 @@ jobs:
       - name: Tester Frontend
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
-
-  deploy:
-    name: Déployer
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Déployer application
-        run: |
-          # Commandes pour déployer l'application
-        working-directory: .
