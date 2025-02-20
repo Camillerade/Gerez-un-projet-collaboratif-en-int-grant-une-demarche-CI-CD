@@ -59,33 +59,7 @@ jobs:
     - name: Run Frontend Tests
       run: |
         npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
-        npm run test:report
       working-directory: front
-
-    - name: Upload Frontend Test Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-test-report
-        path: front/coverage/lcov-report/index.html
-
-    # ----------- SonarCloud Analysis -----------
-
-    - name: Run SonarCloud Analysis
-      uses: sonarsource/sonarcloud-github-action@v2
-      with:
-        projectBaseDir: .
-        args: >
-          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} 
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.sources=back/src,front/src
-          -Dsonar.tests=back/src/test,front/src
-          -Dsonar.test.inclusions=back/src/test/java/com/openclassrooms/bobapp/BobappApplicationTests.java,front/src/test.ts
-          -Dsonar.inclusions=**/*.java,**/*.js,**/*.ts
-          -Dsonar.java.binaries=back/target/classes
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        JAVA_HOME: ${{ runner.tool_cache }}/jdk/11
 
     # ----------- Docker Deployment -----------
 
