@@ -80,8 +80,8 @@ jobs:
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v3
       with:
-        context: back          # Répertoire contenant le Dockerfile
-        file: Dockerfile       # Référence au Dockerfile
+        context: back               # Définit le contexte de construction sur le répertoire back
+        file: Dockerfile            # Référence au Dockerfile (assurez-vous qu'il soit dans le contexte)
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/bobapp:latest
 
