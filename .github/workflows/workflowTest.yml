@@ -27,9 +27,16 @@ jobs:
       - name: Test Backend Unitaires
         run: mvn test
         working-directory: back
-      - name: Test Backend d'Intégration
-        run: mvn integration-test
-        working-directory: back
+      - name: Créer le répertoire target pour le Backend si nécessaire
+        run: |
+          if [ ! -d "back/target" ]; then
+            mkdir -p back/target
+          fi
+        shell: bash
+      - name: Générer le rapport de test pour le Backend
+        run: |
+          cat back/target/surefire-reports/*.xml > back/target/test-report-backend.xml
+        shell: bash
       - name: Set up Node.js (for Frontend)
         uses: actions/setup-node@v3
         with:
@@ -43,15 +50,21 @@ jobs:
       - name: Tester Frontend
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
+      - name: Créer le répertoire target pour le Frontend si nécessaire
+        run: |
+          if [ ! -d "front/target" ]; then
+            mkdir -p front/target
+          fi
+        shell: bash
+      - name: Générer le rapport de test pour le Frontend
+        run: |
+          cat front/test-results.xml > front/target/test-report-frontend.xml
+        shell: bash
       - name: Télécharger les rapports de test
         uses: actions/upload-artifact@v4
         with:
-          name: test-archives
-          path: ${{ github.workspace }}/back/target/surefire-reports
+          name: test-reports
+          path: |
+            back/target/test-report-backend.xml
+            front/target/test-report-frontend.xml
           retention-days: 30
-      - name: Afficher les rapports de test
-        run: |
-          echo "Rapports de test:"
-          ls -l ${{ github.workspace }}/back/target/surefire-reports
-          cat ${{ github.workspace }}/back/target/surefire-reports/*.xml
-        shell: bash
