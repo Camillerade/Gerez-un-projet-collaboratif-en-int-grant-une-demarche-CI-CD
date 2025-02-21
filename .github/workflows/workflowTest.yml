@@ -36,14 +36,11 @@ jobs:
         run: |
           docker build -t local/bobapp:latest back
           docker run -d -p 8080:8080 --name bobapp local/bobapp:latest
-      - name: Attendre que l'instance Docker soit prête
-        run: |
-          sleep 10
       - name: Stocker les rapports de test
         run: |
           mkdir -p back/target
-          docker exec -w /app/back bobapp mvn test -Dmaven.test.redirectTestOutputToFile=true
-          docker cp bobapp:/app/back/target/surefire-reports back/target
+          docker exec -w /app bobapp mvn test -Dmaven.test.redirectTestOutputToFile=true
+          docker cp bobapp:/app/target/surefire-reports back/target
       - name: Télécharger les rapports de test
         uses: actions/upload-artifact@v4
         with:
