@@ -43,11 +43,12 @@ jobs:
       - name: Tester Frontend
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
-      - name: Télécharger les archives des tests
-        uses: actions/download-artifact@v4
+      - name: Télécharger les rapports de test
+        uses: actions/upload-artifact@v4
         with:
           name: test-archives
-          path: ${{ github.workspace }}/back/test-reports
+          path: /home/runner/work/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/back/test-reports
+          retention-days: 30
       - name: Afficher les rapports de test
         run: |
           echo "Rapports de test:"
