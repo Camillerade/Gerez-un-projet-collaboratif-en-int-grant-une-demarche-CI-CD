@@ -67,7 +67,7 @@ jobs:
           cp front/target/test-report-frontend.xml $GITHUB_WORKSPACE/reports/
         shell: bash
       - name: Télécharger les rapports de test
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: $GITHUB_WORKSPACE/reports
