@@ -44,7 +44,7 @@ jobs:
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
       - name: Télécharger les archives des tests
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-archives
           path: ${{ github.workspace }}/back/test-reports
