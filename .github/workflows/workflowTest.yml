@@ -60,11 +60,9 @@ jobs:
         run: |
           cat front/test-results.xml > front/target/test-report-frontend.xml
         shell: bash
-      - name: Télécharger les rapports de test
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            back/target/test-report-backend.xml
-            front/target/test-report-frontend.xml
-          retention-days: 30
+      - name: Stocker les rapports de test dans la workspace
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/reports
+          cp back/target/test-report-backend.xml $GITHUB_WORKSPACE/reports/
+          cp front/target/test-report-frontend.xml $GITHUB_WORKSPACE/reports/
+        shell: bash
