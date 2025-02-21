@@ -43,3 +43,14 @@ jobs:
       - name: Tester Frontend
         run: npm run test -- --watch=false --browsers=ChromeHeadless
         working-directory: front
+      - name: Télécharger les archives des tests
+        uses: actions/download-artifact@v3
+        with:
+          name: test-archives
+          path: ${{ github.workspace }}/back/test-reports
+      - name: Afficher les rapports de test
+        run: |
+          echo "Rapports de test:"
+          ls -l ${{ github.workspace }}/back/test-reports
+          cat ${{ github.workspace }}/back/test-reports/*.xml
+        shell: bash
