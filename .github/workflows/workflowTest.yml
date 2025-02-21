@@ -47,11 +47,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-archives
-          path: /home/runner/work/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/Gerez-un-projet-collaboratif-en-int-grant-une-demarche-CI-CD/back/test-reports
+          path: ${{ github.workspace }}/back/target/surefire-reports
           retention-days: 30
       - name: Afficher les rapports de test
         run: |
           echo "Rapports de test:"
-          ls -l ${{ github.workspace }}/back/test-reports
-          cat ${{ github.workspace }}/back/test-reports/*.xml
+          ls -l ${{ github.workspace }}/back/target/surefire-reports
+          cat ${{ github.workspace }}/back/target/surefire-reports/*.xml
         shell: bash
