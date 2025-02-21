@@ -1,5 +1,5 @@
+# test.yml
 name: Test Pipeline
-
 on:
   push:
     branches:
@@ -7,11 +7,8 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
-
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,47 +24,28 @@ jobs:
       - name: Test Backend Unitaires
         run: mvn test
         working-directory: back
-      - name: Créer le répertoire target pour le Backend si nécessaire
-        run: |
-          if [ ! -d "back/target" ]; then
-            mkdir -p back/target
-          fi
-        shell: bash
-      - name: Générer le rapport de test pour le Backend
-        run: |
-          cat back/target/surefire-reports/*.xml > back/target/test-report-backend.xml
-        shell: bash
-      - name: Set up Node.js (for Frontend)
-        uses: actions/setup-node@v3
+      - name: Test Backend d'Intégration
+        run: mvn integration-test
+        working-directory: back
+      - name: Lancer une instance Docker
+        uses: docker/login-action@v2
         with:
-          node-version: '18'
-      - name: Installer dépendances
-        run: npm install --legacy-peer-deps
-        working-directory: front
-      - name: Compiler Frontend
-        run: npm run build
-        working-directory: front
-      - name: Tester Frontend
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
-        working-directory: front
-      - name: Créer le répertoire target pour le Frontend si nécessaire
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Lancer une instance Docker
         run: |
-          if [ ! -d "front/target" ]; then
-            mkdir -p front/target
-          fi
-        shell: bash
-      - name: Générer le rapport de test pour le Frontend
+          docker build -t local/bobapp:latest back
+          docker run -d -p 8080:8080 local/bobapp:latest
+      - name: Attendre que l'instance Docker soit prête
         run: |
-          cat front/test-results.xml > front/target/test-report-frontend.xml
-        shell: bash
-      - name: Stocker les rapports de test dans la workspace
+          sleep 10
+      - name: Stocker les rapports de test
         run: |
-          mkdir -p $GITHUB_WORKSPACE/reports
-          cp back/target/test-report-backend.xml $GITHUB_WORKSPACE/reports/
-          cp front/target/test-report-frontend.xml $GITHUB_WORKSPACE/reports/
-        shell: bash
+          mkdir -p back/target
+          docker exec -it $(docker ps -q -f name=local/bobapp) mvn test -Dmaven.test.redirectTestOutputToFile=true
+          docker cp $(docker ps -q -f name=local/bobapp):/app/back/target/surefire-reports back/target
       - name: Télécharger les rapports de test
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
-          path: $GITHUB_WORKSPACE/reports
+          name: test-report
+          path: back/target
