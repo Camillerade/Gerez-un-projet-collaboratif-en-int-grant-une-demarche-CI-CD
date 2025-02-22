@@ -1,4 +1,4 @@
-name: Test Pipeline
+name: Complete CI/CD Pipeline
 
 on:
   push:
@@ -7,55 +7,57 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  test:
-    name: Test
+  build-and-push:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
       - name: Set up JDK 11 (for Backend)
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Compile Backend
-        run: mvn compile
+
+      - name: Build Backend with Maven
+        run: mvn clean install
         working-directory: back
-      - name: Test Backend Unitaires
+
+      - name: Run Backend Tests
         run: mvn test
         working-directory: back
-      - name: Test Backend d'Intégration
-        run: mvn integration-test
+
+      - name: Generate Backend Test Report
+        run: mvn jacoco:report
         working-directory: back
-      - name: Set up Node.js (for Frontend)
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - name: Installer dépendances
-        run: npm install --legacy-peer-deps
-        working-directory: front
-      - name: Compiler Frontend
-        run: npm run build
-        working-directory: front
-      - name: Tester Frontend
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
-        working-directory: front
-      - name: Générer le rapport de test
-        run: |
-          mkdir -p back/target
-          cat back/target/surefire-reports/*.xml > back/target/test-report
-        shell: bash
-      - name: Télécharger le rapport de test
+
+      - name: Upload Backend Test Report
         uses: actions/upload-artifact@v4
         with:
-          name: test-report
-          path: back/target/test-report
-          retention-days: 30
-      - name: Afficher les rapports de test
+          name: backend-test-report
+          path: back/target/site/jacoco/
+
+      - name: List files in back directory
+        run: ls -la back  
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: back                 
+          file: back/Dockerfile         
+          push: false                  
+          tags: local/bobapp:latest
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker Image
         run: |
-          echo "Rapports de test:"
-          cat back/target/test-report
-        shell: bash
+          docker tag local/bobapp:latest ${{ secrets.DOCKER_USERNAME }}/bobapp:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/bobapp:latest  
